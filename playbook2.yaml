@@ -1,0 +1,12 @@
+- hosts: k8s
+  become: true
+  roles:
+    - install-k8s
+- hosts: k8smaster
+  become: true
+  roles:
+    - create-cluster
+- hosts: k8snodes
+  become: true
+  roles:
+    - join-workers

@@ -1,0 +1,123 @@
+- name: Install packages that allow apt to be used over HTTPS
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg-agent
+    - gnupg
+    - software-properties-common
+    - net-tools
+
+- name: remove netplan config
+  ansible.builtin.file:
+    path: /etc/netplan/50-cloud-init.yaml
+    state: absent
+
+- name: set netplan
+  template:
+    src: templates/50-vagrant.yaml.j2
+    dest: /etc/netplan/50-vagrant.yaml
+
+- name: update netplan
+  shell: netplan apply
+
+- name: update route
+  shell: route add default gw 192.168.0.1
+
+- name: Download docker
+  get_url:
+    url: https://get.docker.com
+    dest: /tmp/foo.sh
+    mode: '0777'
+ 
+- name: Instalando o Docker
+  shell: /tmp/foo.sh
+
+- name: "update /etc/docker/daemon.json"
+  template:
+    src: templates/daemon.json
+    dest: /etc/docker/daemon.json
+    owner: vagrant
+    group: admin
+    mode: 0777
+  notify: Restart Docker and Daemon
+
+- name: Add vagrant user to docker group
+  user:
+    name: vagrant
+    group: docker
+
+- name: Add vagrant user to docker group
+  user:
+    name: vagrant
+    groups: docker,admin
+
+- name: Remove swapfile from /etc/fstab
+  mount:
+    name: "{{ item }}"
+    fstype: swap
+    state: absent
+  with_items:
+    - swap
+    - none
+
+- name: Disable swap
+  command: swapoff -a
+  when: ansible_swaptotal_mb > 0
+
+- name: mount eBPF
+  command: mount bpffs /sys/fs/bpf -t bpf
+
+
+- name: Adicionando as chaves do repo apt do k8s
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+    
+
+- name: Adicionando o repo do k8s
+  apt_repository:
+    repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    filename: kubernetes.list
+
+- name: Instalando os pacotes kubeadm, kubelet e kubectl
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+  vars:
+    packages:
+    - kubelet=1.19.4-00
+    - kubeadm=1.19.4-00
+    - kubectl=1.19.4-00
+  notify: 
+    - Restart Kubelet
+    - Restart Docker
+
+- name: Download Helm
+  get_url:
+    url: https://get.helm.sh/helm-v3.5.2-linux-amd64.tar.gz
+    dest: /tmp/helm-v3.5.2-linux-amd64.tar.gz
+    mode: '0777'
+
+- name: unzip helm
+  ansible.builtin.unarchive:
+    src: /tmp/helm-v3.5.2-linux-amd64.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: Copy helm to bin
+  ansible.builtin.copy:
+    src: /tmp/linux-amd64/helm
+    dest: /usr/local/bin
+    owner: vagrant
+    group: admin
+    mode: '0777'
+    remote_src: yes
+
+-

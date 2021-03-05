@@ -1,0 +1,4 @@
+---
+# tasks file for create-cluster
+- include: init-cluster.yml 
+#- include: install-traefik.yaml

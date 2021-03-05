@@ -1,0 +1,10 @@
+- name: restart_resolved
+  tags:
+    - service
+  service:
+    name: systemd-resolved
+    state: restarted
+  become: true
+- name: restart_vm
+  reboot:
+  become: true

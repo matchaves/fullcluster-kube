@@ -1,0 +1,35 @@
+- name: Initialize the Kubernetes cluster using kubeadm
+  command: kubeadm init --apiserver-advertise-address={{ K8S_MASTER_NODE_IP }} --apiserver-cert-extra-sans={{ K8S_MASTER_NODE_IP }}  #--node-name k8s-master --pod-network-cidr=10.0.
+
+- name: Criando o diretorio .kube
+  file:
+    path: /home/vagrant/.kube
+    state: directory 
+
+- name: Linkando o arquivo admin.conf para o ~/.kube/config
+  file:
+    src: /etc/kubernetes/admin.conf
+    dest: /home/vagrant/.kube/config
+    owner: vagrant
+    group: admin
+    state: hard
+    mode: '0644'
+
+
+- name: Configurando o pod network Weavenet
+  become_user: vagrant
+  shell: kubectl apply -f "{{ default_url_weavenet }}"
+  
+- name: Gerando o comando kubectl join
+  become_user: vagrant
+  command: kubeadm token create --print-join-command
+  register: join_command
+
+- name: Crianod um objeto temporario para guardar variaveis
+  add_host:
+    name: "TEMP_VAR"
+    full: "{{ join_command.stdout_lines[0] }}"
+
+- name: 
+  debug:
+    msg: "COMANDO JOIN IGUAL #############3 {{ hostvars['TEMP_VAR']['full'] }}"

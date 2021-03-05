@@ -1,0 +1,11 @@
+- name: add repo traefik
+  become_user: vagrant
+  command: helm repo add traefik https://helm.traefik.io/traefik
+
+- name: update helm repo
+  become_user: vagrant
+  command: helm repo update
+
+- name: install traefik helm
+  become_user: vagrant
+  command: helm install traefik traefik/traefik
