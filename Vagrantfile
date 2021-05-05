@@ -11,9 +11,9 @@ Vagrant.configure("2") do |config|
   # https://docs.vagrantup.com.
 
   boxes = [
-        { :name => "k8master", :ip => "192.168.0.230" },
-        { :name => "k8node1", :ip => "192.168.0.231" },
-        { :name => "k8node2", :ip => "192.168.0.232" }
+        { :name => "k8master", :ip => "192.168.50.230" },
+        { :name => "k8node1", :ip => "192.168.50.231" },
+        { :name => "k8node2", :ip => "192.168.50.232" }
     ]
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
@@ -35,18 +35,18 @@ Vagrant.configure("2") do |config|
       end
     if opts[:name] == "k8node2"
       node.vm.provision "ansible" do |ansible|
-        ansible.playbook = "playbook.yml"
+        ansible.playbook = "playbook2.yml"
         ansible.extra_vars = {
-          K8S_MASTER_NODE_IP: "192.168.0.230",
-          K8S_NODE1_IP: "192.168.0.231",
-          K8S_NODE2_IP: "192.168.0.232",
+          K8S_MASTER_NODE_IP: "192.168.50.230",
+          K8S_NODE1_IP: "192.168.50.231",
+          K8S_NODE2_IP: "192.168.50.232",
           "K8S_API_SECURE_PORT" => 6443}
         ansible.limit = "all"
         ansible.groups = {
                 "k8snodes" => ["k8node1", "k8node2"],
                 "k8s" => ["k8master", "k8node1", "k8node2"],
                 "k8smaster" => ["k8master"],
-                "k8snodes:vars" => {"K8S_MASTER_NODE_IP=" => "192.168.0.230",
+                "k8snodes:vars" => {"K8S_MASTER_NODE_IP=" => "192.168.50.230",
                                   "K8S_API_SECURE_PORT" => 6443}
                                   }
                                   

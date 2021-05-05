@@ -1,8 +1,9 @@
 ---
 # handlers file for install-k8s
-- name: Restart Docker
-  service:
-    name: docker
+- name: Restart Containerd
+  systemd:
+    daemon_reload: yes
+    name: containerd
     state: restarted
 
 - name: Restart Kubelet

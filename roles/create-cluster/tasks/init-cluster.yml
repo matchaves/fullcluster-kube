@@ -1,5 +1,5 @@
 - name: Initialize the Kubernetes cluster using kubeadm
-  command: kubeadm init --apiserver-advertise-address={{ K8S_MASTER_NODE_IP }} --apiserver-cert-extra-sans={{ K8S_MASTER_NODE_IP }}  #--node-name k8s-master --pod-network-cidr=10.0.
+  command: kubeadm init --apiserver-advertise-address={{ K8S_MASTER_NODE_IP }}  --pod-network-cidr=10.0.0.0/24  --apiserver-cert-extra-sans={{ K8S_MASTER_NODE_IP }} #--node-name k8s-master --pod-network-cidr=10.0. --apiserver-cert-extra-sans={{ K8S_MASTER_NODE_IP }}
 
 - name: Criando o diretorio .kube
   file:

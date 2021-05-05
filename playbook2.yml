@@ -1,6 +1,7 @@
 - hosts: k8s
   become: true
   roles:
+    - install-client
     - install-k8s
 - hosts: k8smaster
   become: true

@@ -1,3 +1,36 @@
+- name: Remove Disable swap
+  lineinfile:
+    path: /etc/fstab
+    state: absent
+    regexp: 'swap'
+
+- name: Disable swap
+  command: swapoff -a
+
+- name: Creating conf containerD
+  copy:
+    dest: "/etc/modules-load.d/containerd.conf"
+    content: |
+      overlay
+      br_netfilter
+
+- name: Disable swap
+  command: modprobe overlay
+
+- name: Disable swap
+  command: modprobe br_netfilter
+
+- name: Creating conf kubernetes
+  copy:
+    dest: "/etc/sysctl.d/kubernetes.conf"
+    content: |
+      net.bridge.bridge-nf-call-ip6tables = 1
+      net.bridge.bridge-nf-call-iptables  = 1
+      net.ipv4.ip_forward                 = 1
+      
+- name: Load System
+  command: sysctl --system >/dev/null 2>&1
+
 - name: Install packages that allow apt to be used over HTTPS
   apt:
     name: "{{ packages }}"
@@ -6,69 +39,24 @@
   vars:
     packages:
     - apt-transport-https
+    - containerd
     - ca-certificates
     - curl
     - gnupg-agent
     - gnupg
     - software-properties-common
-    - net-tools
 
-- name: remove netplan config
+- name: Load System
+  command: sysctl --system >/dev/null 2>&1
+
+- name: Create containerd directory
   ansible.builtin.file:
-    path: /etc/netplan/50-cloud-init.yaml
-    state: absent
+    path: /etc/containerd
+    state: directory
 
-- name: set netplan
-  template:
-    src: templates/50-vagrant.yaml.j2
-    dest: /etc/netplan/50-vagrant.yaml
-
-- name: update netplan
-  shell: netplan apply
-
-- name: update route
-  shell: route add default gw 192.168.0.1
-
-- name: Download docker
-  get_url:
-    url: https://get.docker.com
-    dest: /tmp/foo.sh
-    mode: '0777'
- 
-- name: Instalando o Docker
-  shell: /tmp/foo.sh
-
-- name: "update /etc/docker/daemon.json"
-  template:
-    src: templates/daemon.json
-    dest: /etc/docker/daemon.json
-    owner: vagrant
-    group: admin
-    mode: 0777
-  notify: Restart Docker and Daemon
-
-- name: Add vagrant user to docker group
-  user:
-    name: vagrant
-    group: docker
-
-- name: Add vagrant user to docker group
-  user:
-    name: vagrant
-    groups: docker,admin
-
-- name: Remove swapfile from /etc/fstab
-  mount:
-    name: "{{ item }}"
-    fstype: swap
-    state: absent
-  with_items:
-    - swap
-    - none
-
-- name: Disable swap
-  command: swapoff -a
-  when: ansible_swaptotal_mb > 0
+- name: Load Sys containerd file
+  command: containerd config default > /etc/containerd/config.toml
+  notify: Restart Containerd
 
 - name: mount eBPF
   command: mount bpffs /sys/fs/bpf -t bpf
@@ -86,18 +74,27 @@
     state: present
     filename: kubernetes.list
 
+
+
 - name: Instalando os pacotes kubeadm, kubelet e kubectl
   apt:
     name: "{{ packages }}"
     update_cache: yes
   vars:
     packages:
-    - kubelet=1.19.4-00
-    - kubeadm=1.19.4-00
-    - kubectl=1.19.4-00
-  notify: 
-    - Restart Kubelet
-    - Restart Docker
+    - kubelet=1.21.0-00
+    - kubeadm=1.21.0-00
+    - kubectl=1.21.0-00
+
+- name: Template a file to /etc/file.conf
+  ansible.builtin.template:
+    src: kubelet.conf.j2
+    dest: /etc/default/kubelet
+    owner: vagrant
+    group: admin
+    mode: '0777'
+  notify: Restart Kubelet
+    
 
 - name: Download Helm
   get_url:
