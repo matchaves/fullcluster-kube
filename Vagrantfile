@@ -21,7 +21,7 @@ Vagrant.configure("2") do |config|
     config.vm.define opts[:name] do |node|
       node.vm.box = "ubuntu/focal64"
       node.vm.hostname = opts[:name]
-      node.vm.network :public_network, bridge: "wlxd03745ab5d05", ip: opts[:ip]
+      node.vm.network :public_network, bridge: "enp4s0", ip: opts[:ip]
 
       node.vm.provider "virtualbox" do |vb3|
         #   Display the VirtualBox GUI when booting the machine

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app1-dep
+  labels:
+    run: app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: app  
+  template:
+    metadata:
+      labels:
+        run: app
+    spec:
+      containers:
+      - image: colabdevops/app2go:latest
+        imagePullPolicy: Always
+        name: app2
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+
+      - name: Configurando o pod network Weavenet
+  become_user: note
+  shell: kubectl create -f https://raw.githubusercontent.com/cilium/cilium/1.9.3/install/kubernetes/quick-install.yaml
