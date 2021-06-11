@@ -1,14 +1,10 @@
-- name: Add the user 'johnd' with a specific uid and a primary group of 'admin'
-  user:
-    name: vagrant
-    password: "{{ 'root123' | password_hash('sha512') }}"
-    comment: John Do
-    shell: /bin/bash
-    update_password: always
+- name: remove network default vagrant
+  command: rm -rf /etc/ansible/50-cloud-init.yaml
+
+- name: add network cluster
+  ansible.builtin.template:
+    src: 50-vagrant.yaml.j2
+    dest: /etc/netplan/50-vagrant.yaml
+    owner: vagrant
     group: admin
-- name: Configure sshd
-  lineinfile:
-    path: "/etc/ssh/sshd_config"
-    regex: "^(#)?{{item.key}}"
-    line: "{{item.key}} {{item.value}}"
-    state: present
+    mode: '0777'

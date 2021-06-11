@@ -1,10 +1,11 @@
 - name: Initialize the Kubernetes cluster using kubeadm
+  become_method: sudo
   command: kubeadm init --apiserver-advertise-address={{ K8S_MASTER_NODE_IP }}  --pod-network-cidr=10.0.0.0/24  --apiserver-cert-extra-sans={{ K8S_MASTER_NODE_IP }} #--node-name k8s-master --pod-network-cidr=10.0. --apiserver-cert-extra-sans={{ K8S_MASTER_NODE_IP }}
 
 - name: Criando o diretorio .kube
   file:
     path: /home/vagrant/.kube
-    state: directory 
+    state: directory
 
 - name: Linkando o arquivo admin.conf para o ~/.kube/config
   file:
@@ -13,12 +14,12 @@
     owner: vagrant
     group: admin
     state: hard
-    mode: '0644'
+    mode: '0600'
 
 
-- name: Configurando o pod network Weavenet
-  become_user: vagrant
-  shell: kubectl apply -f "{{ default_url_weavenet }}"
+#- name: Configurando o pod network Weavenet
+#  become_user: vagrant
+#  shell: kubectl apply -f "{{ default_url_weavenet }}"
   
 - name: Gerando o comando kubectl join
   become_user: vagrant
@@ -33,3 +34,15 @@
 - name: 
   debug:
     msg: "COMANDO JOIN IGUAL #############3 {{ hostvars['TEMP_VAR']['full'] }}"
+
+- name: MetalLB namespaces
+  become_user: vagrant
+  command: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.6/manifests/namespace.yaml
+
+- name: MetalLB deploy
+  become_user: vagrant
+  command: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.6/manifests/metallb.yaml
+
+- name: MetalLB Secreet
+  become_user: vagrant
+  command: kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"

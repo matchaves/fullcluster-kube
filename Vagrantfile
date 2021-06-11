@@ -35,7 +35,7 @@ Vagrant.configure("2") do |config|
       end
     if opts[:name] == "k8node2"
       node.vm.provision "ansible" do |ansible|
-        ansible.playbook = "playbook2.yml"
+        ansible.playbook = "playbook.yml"
         ansible.extra_vars = {
           K8S_MASTER_NODE_IP: "192.168.50.230",
           K8S_NODE1_IP: "192.168.50.231",

@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app1-dep
+  labels:
+    run: app1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: app1 
+  template:
+    metadata:
+      labels:
+        run: app1
+    spec:
+      containers:
+      - image: colabdevops/app1go:280
+        imagePullPolicy: Always
+        name: app1
+        envFrom:
+        - configMapRef:
+            name: url-go
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app2-dep
+  labels:
+    run: app2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: app2
+  template:
+    metadata:
+      labels:
+        run: app2
+    spec:
+      containers:
+      - image: colabdevops/app2go:280
+        imagePullPolicy: Always
+        name: app2
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always

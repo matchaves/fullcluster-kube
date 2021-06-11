@@ -1,12 +1,27 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: appservice
+  name: service-app2
+  namespace: default
 spec:
-  type: NodePort
   selector:
-    run: app
+    run: app2
   ports:
-    - port: 8080
-      targetPort: 8080
-      nodePort: 31111
+  - name: web
+    port: 80
+    targetPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-app1
+  namespace: default
+spec:
+  selector:
+    run: app1
+  ports:
+  - name: web
+    port: 80
+    targetPort: 80

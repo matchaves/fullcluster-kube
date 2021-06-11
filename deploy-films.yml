@@ -15,7 +15,7 @@ spec:
         run: app
     spec:
       containers:
-      - image: colabdevops/app2go:latest
+      - image: colabdevops/app2go:280
         imagePullPolicy: Always
         name: app2
       dnsPolicy: ClusterFirst

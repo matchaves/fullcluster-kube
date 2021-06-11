@@ -1,17 +1,29 @@
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: ingress-app1
-  namespace: default
 spec:
   rules:
-  - host: app1.colabdevops.com.br
+  - host: app1.devops.com.br
     http:
       paths:
-      - path: /app1
-        pathType: Prefix
+      - path: /
         backend:
-          service:
-            name: app1
-            port:
-              number: 8080
+          serviceName: service-app1
+          servicePort: 80
+
+---
+
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-app2
+spec:
+  rules:
+  - host: app2.devops.com.br
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: service-app2
+          servicePort: 80
