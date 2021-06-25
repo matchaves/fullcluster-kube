@@ -13,6 +13,7 @@
     - gnupg
     - software-properties-common
     - net-tools
+    - jq
 
 - name: setando senha para o usuario padrão vagrant
   user:

@@ -1,1 +1,1 @@
-KUBELET_EXTRA_ARGS=--node-ip {{ ansible_enp0s8.ipv4.address }}
+KUBELET_EXTRA_ARGS=--node-ip {{ ansible_enp0s8.ipv4.address }} --network-plugin=cni

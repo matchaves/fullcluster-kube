@@ -36,13 +36,13 @@
     msg: "COMANDO JOIN IGUAL #############3 {{ hostvars['TEMP_VAR']['full'] }}"
 
 - name: MetalLB namespaces
-  become_user: vagrant
+  become_user: ubuntu
   command: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.6/manifests/namespace.yaml
 
 - name: MetalLB deploy
-  become_user: vagrant
+  become_user: ubuntu
   command: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.6/manifests/metallb.yaml
 
 - name: MetalLB Secreet
-  become_user: vagrant
+  become_user: ubuntu
   command: kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"

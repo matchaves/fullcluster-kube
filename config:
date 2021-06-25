@@ -1,0 +1,37 @@
+config:
+  user.network-config: |
+    version: 1
+    config:
+      - type: physical
+        name: eth0
+        subnets:
+          - type: static
+            ipv4: true
+            address: 10.25.50.20
+            netmask: 255.255.255.0
+            gateway: 10.25.50.1
+            control: auto
+      - type: nameserver
+        address: 8.8.8.8
+  user.user-data: |
+    #cloud-config
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN0qY6ItiovCJ/PTBTqRpBET+sXfPBubumGGfuzh35wL ubuntu@ubuntu-server
+    package_upgrade: true
+    packages:
+      - build-essential
+      - ssh
+    runcmd:
+      - touch /tmp/succes_provision
+description: Default LXD profile
+devices:
+  eth0:
+    name: eth0
+    network: cart
+    type: nic
+  root:
+    path: /
+    pool: default
+    type: disk
+name: cart
+used_by: []

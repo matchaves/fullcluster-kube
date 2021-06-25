@@ -16,3 +16,12 @@
     daemon_reload: yes
     state: restarted
     name: docker
+
+- name: Enable and mount BPFFSS
+  service:
+    name: sys-fs-bpf.mount
+    enabled: yes
+    state: started
+
+- name: reload systemd
+  command: systemctl daemon-reload
