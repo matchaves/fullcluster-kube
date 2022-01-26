@@ -21,7 +21,7 @@ Vagrant.configure("2") do |config|
     config.vm.define opts[:name] do |node|
       node.vm.box = "ubuntu/focal64"
       node.vm.hostname = opts[:name]
-      node.vm.network :public_network, bridge: "enp4s0", ip: opts[:ip]
+      node.vm.network :public_network, bridge: "wlp6s0", ip: opts[:ip]
 
       node.vm.provider "virtualbox" do |vb3|
         #   Display the VirtualBox GUI when booting the machine
@@ -29,7 +29,7 @@ Vagrant.configure("2") do |config|
         #vb3.name = "k8node2"
         vb3.cpus = 2
         #   Customize the amount of memory on the VM:
-        vb3.memory = "2000"
+        vb3.memory = "4000"
         #vb.customize ["modifyvm", :id, "--memory", 2048]
         #vb.customize ["modifyvm", :id, "--cpus", 2]
       end

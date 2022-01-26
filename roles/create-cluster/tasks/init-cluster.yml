@@ -17,9 +17,9 @@
     mode: '0600'
 
 
-#- name: Configurando o pod network Weavenet
-#  become_user: vagrant
-#  shell: kubectl apply -f "{{ default_url_weavenet }}"
+- name: Configurando o pod network Weavenet
+  become_user: vagrant
+  shell: kubectl apply -f "{{ default_url_weavenet }}"
   
 - name: Gerando o comando kubectl join
   become_user: vagrant
@@ -36,13 +36,13 @@
     msg: "COMANDO JOIN IGUAL #############3 {{ hostvars['TEMP_VAR']['full'] }}"
 
 - name: MetalLB namespaces
-  become_user: ubuntu
+  become_user: vagrant
   command: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.6/manifests/namespace.yaml
 
 - name: MetalLB deploy
-  become_user: ubuntu
+  become_user: vagrant
   command: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.9.6/manifests/metallb.yaml
 
 - name: MetalLB Secreet
-  become_user: ubuntu
+  become_user: vagrant
   command: kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
